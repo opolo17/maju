@@ -4,8 +4,9 @@ export const COPY = {
     scrollTop: '맨 위로 올라가기',
     hero: {
       h1: ['외로운 독백 면접은', '끝났습니다.', '이제, 압박 면접과', '마주할 시간.'],
+      h1Mark: { lineIndex: 3, word: '마주' },
       desc:
-        '옆자리 지원자의 화려한 답변에 멘탈이 털린 적 있나요? 나를 합격으로 이끌어줄 든든하고 상쾌한 AI 스터디 파트너와 함께, 가장 실전에 가까운 다대다 면접을 경험하세요.',
+        '옆자리 지원자의 화려한 답변에 멘탈이 털린 적 있나요? 다대다 면접은 처음이라 어떻게 준비해야할지 막막하신가요? 나를 합격으로 이끌어줄 든든하고 상쾌한 AI 스터디 파트너와 함께, 가장 실전에 가까운 다대다 면접을 경험하세요.',
     },
     form: {
       emailPlaceholder: '이메일을 입력해 주세요',
@@ -105,6 +106,7 @@ export const COPY = {
         'Now face',
         'the pressure.',
       ],
+      h1Mark: { lineIndex: 2, word: 'face' },
       desc: 'Ever lost your nerve to a polished answer from the candidate next to you? Train with a refreshing AI study partner built for the most realistic group interview experience.',
     },
     form: {

@@ -116,30 +116,66 @@ async function submitToSheetDB(email, featureRequest = '') {
   }
 }
 
-function LangToggle() {
-  const { lang, setLang, t } = useLanguage();
+function MarkerHighlight({ children }) {
+  return (
+    <span className="relative inline whitespace-nowrap">
+      <span className="relative z-10">{children}</span>
+      <span
+        aria-hidden
+        className="absolute bottom-[0.06em] left-[-0.05em] right-[-0.05em] z-0 h-[0.52em] -skew-x-3 rounded-[2px] bg-[#E3F58F]"
+      />
+    </span>
+  );
+}
+
+function HeroHeadlineLine({ line, mark }) {
+  if (!mark) return line;
+
+  const index = line.indexOf(mark);
+  if (index === -1) return line;
 
   return (
-    <div
-      className="flex items-center rounded-full border border-gray-200 bg-[#F8FAFC] p-0.5"
-      role="group"
+    <>
+      {line.slice(0, index)}
+      <MarkerHighlight>{mark}</MarkerHighlight>
+      {line.slice(index + mark.length)}
+    </>
+  );
+}
+
+function LangToggle() {
+  const { lang, toggleLang, t } = useLanguage();
+  const isKo = lang === 'ko';
+
+  return (
+    <button
+      type="button"
+      onClick={toggleLang}
+      className="relative inline-flex h-8 w-[4.25rem] shrink-0 rounded-full border border-gray-200 bg-[#F8FAFC] p-0.5"
       aria-label={t.langToggle}
+      aria-pressed={!isKo}
     >
-      {['ko', 'en'].map((code) => (
-        <button
-          key={code}
-          type="button"
-          onClick={() => setLang(code)}
-          className={`rounded-full px-2.5 py-1 text-xs font-bold uppercase tracking-tight transition ${
-            lang === code
-              ? 'bg-white text-[#2A2A2A] shadow-sm'
-              : 'text-[#64748B] hover:text-[#2A2A2A]'
-          }`}
-        >
-          {code}
-        </button>
-      ))}
-    </div>
+      <span
+        aria-hidden
+        className={`pointer-events-none absolute top-0.5 bottom-0.5 left-0.5 w-[calc(50%-2px)] rounded-full bg-white shadow-sm transition-transform duration-300 ease-in-out ${
+          isKo ? 'translate-x-0' : 'translate-x-[calc(100%+4px)]'
+        }`}
+      />
+      <span
+        className={`relative z-10 flex flex-1 items-center justify-center text-xs font-bold uppercase tracking-tight transition-colors duration-300 ${
+          isKo ? 'text-[#2A2A2A]' : 'text-[#64748B]'
+        }`}
+      >
+        ko
+      </span>
+      <span
+        className={`relative z-10 flex flex-1 items-center justify-center text-xs font-bold uppercase tracking-tight transition-colors duration-300 ${
+          isKo ? 'text-[#64748B]' : 'text-[#2A2A2A]'
+        }`}
+      >
+        en
+      </span>
+    </button>
   );
 }
 
@@ -444,9 +480,11 @@ export default function App() {
       {/* 1. Header */}
       <header className="fixed top-0 z-50 w-full border-b border-gray-100 bg-white/80 backdrop-blur-md">
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-24">
-          <span className="text-2xl font-extrabold tracking-tighter text-[#2A2A2A]">
-            MAJU
-          </span>
+          <img
+            src="/logo.png"
+            alt="MAJU"
+            className="h-7 w-auto object-contain sm:h-8"
+          />
           <LangToggle />
         </nav>
       </header>
@@ -457,9 +495,14 @@ export default function App() {
           <div className="mb-12 flex flex-1 flex-col justify-center lg:mb-0 lg:max-w-xl lg:pr-8">
             <h1 className="mb-6 text-4xl font-bold leading-tight text-[#2A2A2A] lg:text-6xl">
               {t.hero.h1.map((line, i) => (
-                <span key={line}>
+                <span key={i}>
                   {i > 0 && <br />}
-                  {line}
+                  <HeroHeadlineLine
+                    line={line}
+                    mark={
+                      t.hero.h1Mark?.lineIndex === i ? t.hero.h1Mark.word : undefined
+                    }
+                  />
                 </span>
               ))}
             </h1>
