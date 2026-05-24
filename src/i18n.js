@@ -23,8 +23,8 @@ export const COPY = {
       prefix: '지금 사전 신청 시,',
       badge: '선착순 100명',
       suffix: '에게',
-      highlight: '평생 50% 할인권',
-      end: '을 드립니다.',
+      highlight: '1년 무료 프리미엄 패스',
+      end: '를 드립니다.',
     },
     video: {
       title: 'MAJU · 다대다 면접 시뮬레이션',
@@ -123,9 +123,9 @@ export const COPY = {
     benefit: {
       prefix: 'Pre-register now —',
       badge: 'First 100',
-      suffix: 'get a',
-      highlight: 'lifetime 50% off',
-      end: ' coupon.',
+      suffix: 'receive a',
+      highlight: '1-year free premium pass',
+      end: '.',
     },
     video: {
       title: 'MAJU · Group interview simulation',

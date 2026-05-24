@@ -179,18 +179,32 @@ function LangToggle() {
   );
 }
 
+function BenefitEmphasis({ children }) {
+  return (
+    <span className="inline-flex items-center rounded-full bg-[#E3F58F] px-2.5 py-0.5 text-sm font-bold text-[#2A2A2A] sm:px-3 sm:py-1 sm:text-base">
+      {children}
+    </span>
+  );
+}
+
 function EarlyBirdBenefit({ className = '' }) {
   const { t } = useLanguage();
   const b = t.benefit;
 
   return (
-    <p className={`text-sm text-[#64748B] ${className}`}>
-      {b.prefix}{' '}
-      <span className="inline-flex items-center rounded-full bg-[#E3F58F] px-2 py-0.5 text-xs font-bold text-[#2A2A2A]">
-        {b.badge}
-      </span>{' '}
-      {b.suffix}{' '}
-      <span className="font-bold text-[#2A2A2A]">{b.highlight}</span> {b.end}
+    <p
+      className={`text-center text-base leading-[1.85] text-[#64748B] sm:text-left sm:text-lg sm:leading-relaxed ${className}`}
+    >
+      <span className="inline sm:inline">
+        {b.prefix}{' '}
+        <BenefitEmphasis>{b.badge}</BenefitEmphasis> {b.suffix}
+      </span>
+      <br className="sm:hidden" />
+      <span className="hidden sm:inline">&nbsp;</span>
+      <span className="inline sm:inline">
+        <BenefitEmphasis>{b.highlight}</BenefitEmphasis>
+        {b.end}
+      </span>
     </p>
   );
 }
@@ -607,7 +621,7 @@ export default function App() {
               <span className="hidden sm:inline">&nbsp;</span>
               {t.cta.title[2]}
             </h2>
-            <EarlyBirdBenefit className="mb-8 text-sm sm:text-base" />
+            <EarlyBirdBenefit className="mb-8" />
             <div className="flex justify-center">
               <WaitlistForm className="justify-center" />
             </div>
