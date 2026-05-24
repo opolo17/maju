@@ -1,6 +1,13 @@
+export const LANGUAGES = [
+  { code: 'ko', label: '한국어' },
+  { code: 'en', label: 'English' },
+  { code: 'ja', label: '日本語' },
+];
+
 export const COPY = {
   ko: {
-    langToggle: '언어 전환',
+    langSelect: '언어 선택',
+    langMenuTitle: '언어',
     scrollTop: '맨 위로 올라가기',
     hero: {
       h1: ['외로운 독백 면접은', '끝났습니다.', '이제, 압박 면접과', '마주할 시간.'],
@@ -55,19 +62,19 @@ export const COPY = {
       ],
     },
     features: {
-      title: ['압도적인 실전 감각,', 'MAJU만의 3가지 스파링 모드'],
+      title: ['압도적인 실전 감각,', 'MAJU만의 3가지 강점'],
       items: [
         {
-          title: '다대다 피어 프레셔 (Peer Pressure) 구현',
-          desc: '가상 경쟁자 AI가 내뱉는 모범 답안을 듣고도 평정심을 유지하는 진짜 멘탈 훈련을 시작하세요.',
+          title: "완벽하게 구현된 '피어 프레셔(Peer Pressure)'",
+          desc: '나보다 유창하게 답변하는 가상 경쟁자 AI들을 배치하여 실전 면접장의 팽팽한 긴장감을 그대로 재현합니다. 옆 사람의 답변에 페이스를 잃지 않는 강력한 멘탈 훈련을 시작하세요.',
         },
         {
-          title: '실시간 고스트 코치 HUD',
-          desc: '답변 도중 눈동자가 흔들리거나 말이 빨라지면, 화면 구석에 즉시 힌트와 경고가 표시됩니다.',
+          title: "시선과 페이스를 잡아주는 '실시간 HUD 코치'",
+          desc: '답변 도중 눈동자가 흔들리거나 말이 빨라지면 화면 구석에 즉시 조용히 경고와 가이드를 띄워줍니다. 면접이 끝난 후가 아닌, 실시간으로 피드백을 생성합니다.',
         },
         {
-          title: '내 맞춤형 빌런 페르소나',
-          desc: '공고문과 족보를 입력하세요. 온화한 면접관부터 꼬리 질문으로 물어뜯는 압박 면접관까지 완벽하게 동기화됩니다.',
+          title: "내 맞춤형 'AI 면접관 페르소나'",
+          desc: '준비 중인 채용 공고문이나 면접 족보를 입력하세요. 온화한 경청형부터 날카로운 꼬리 질문으로 압박하는 면접관까지 당신만을 위한 완벽한 맞춤형 환경을 제공합니다.',
         },
       ],
       visual: {
@@ -76,7 +83,7 @@ export const COPY = {
         peerBanner: '옆 지원자 모범 답변 재생 중…',
         gaze: '시선 고정 유지',
         speed: '말 속도 ↑',
-        personas: ['온화한 면접관', '압박 면접관', '꼬리 질문형'],
+        personas: ['온화한 경청형', '압박 면접관', '꼬리 질문형'],
       },
     },
     reverse: {
@@ -97,7 +104,8 @@ export const COPY = {
     footer: '© 2026 MAJU. All rights reserved.',
   },
   en: {
-    langToggle: 'Switch language',
+    langSelect: 'Select language',
+    langMenuTitle: 'Language',
     scrollTop: 'Back to top',
     hero: {
       h1: [
@@ -159,19 +167,19 @@ export const COPY = {
       ],
     },
     features: {
-      title: ['Realistic pressure,', "MAJU's 3 sparring modes"],
+      title: ['Real interview pressure,', "MAJU's 3 core strengths"],
       items: [
         {
-          title: 'Multi-candidate peer pressure',
-          desc: 'Train your composure while virtual rivals deliver model answers you cannot unhear.',
+          title: "True 'Peer Pressure' simulation",
+          desc: 'Virtual rivals answer more fluently than you, recreating the tense energy of a real group interview room. Train the mental strength to keep your pace when someone beside you sounds brilliant.',
         },
         {
-          title: 'Real-time ghost coach HUD',
-          desc: 'If your gaze drifts or pace speeds up, hints and warnings appear instantly in the corner.',
+          title: "A real-time HUD coach for gaze and pace",
+          desc: 'If your eyes wander or your pace speeds up, quiet warnings and guides appear in the corner instantly — feedback in the moment, not after the interview ends.',
         },
         {
-          title: 'Custom villain personas',
-          desc: 'Paste the job post and prep notes — from gentle interviewers to aggressive follow-up grillers.',
+          title: "Your custom AI interviewer persona",
+          desc: 'Paste the job posting or your prep notes. From a gentle listener to a sharp interviewer who pressures you with follow-up questions — a tailored setup built just for you.',
         },
       ],
       visual: {
@@ -180,7 +188,7 @@ export const COPY = {
         peerBanner: 'Playing peer model answer…',
         gaze: 'Hold eye contact',
         speed: 'Pace ↑',
-        personas: ['Gentle interviewer', 'Pressure interviewer', 'Follow-up grill'],
+        personas: ['Gentle listener', 'Pressure interviewer', 'Follow-up grill'],
       },
     },
     reverse: {
@@ -196,6 +204,104 @@ export const COPY = {
         'Crushing interview nerves,',
         'with MAJU become',
         'refreshing confidence.',
+      ],
+    },
+    footer: '© 2026 MAJU. All rights reserved.',
+  },
+  ja: {
+    langSelect: '言語を選択',
+    langMenuTitle: '言語',
+    scrollTop: 'ページ上部へ',
+    hero: {
+      h1: ['孤独な独り言面接は', '終わりました。', 'さあ、圧迫面接と', '向き合う時間。'],
+      h1Mark: { lineIndex: 3, word: '向き合う' },
+      desc:
+        '隣の候補者の見事な回答に心が折れたことはありませんか？グループ面接が初めてで、どう準備すればいいか分からない方も。合格へ導く頼もしく爽やかなAIスタディパートナーと、最も実戦に近いグループ面接を体験してください。',
+    },
+    form: {
+      emailPlaceholder: 'メールアドレスを入力してください',
+      emailLabel: 'メールアドレス',
+      featurePlaceholder: 'MAJUにこんな機能があったらいいな！（任意）',
+      featureLabel: '機能の提案（任意）',
+      submit: '1秒で事前登録',
+      submitting: '送信中...',
+      error: '送信に失敗しました。しばらくしてから再度お試しください。',
+      successTitle: '事前登録が完了しました！',
+      successDesc: 'リリース後、いち早くご案内いたします。',
+    },
+    benefit: {
+      prefix: '今事前登録すると、',
+      badge: '先着100名',
+      suffix: 'に',
+      highlight: '1年間無料プレミアムパス',
+      end: 'をプレゼント。',
+    },
+    video: {
+      title: 'MAJU · グループ面接シミュレーション',
+      end: '終了',
+      coachHint: '話すペースが速くなっています。深呼吸してゆっくり。',
+      participants: [
+        { label: '自分', sub: '自分の画面' },
+        { label: 'AI面接官', sub: '圧迫質問', badge: 'HOST' },
+        { label: '仮想候補者1', sub: '模範回答' },
+        { label: '仮想候補者2', sub: 'ライバル' },
+      ],
+    },
+    pain: {
+      title: ['なぜAI模擬面接を練習しても', '本番で崩れてしまうのか？'],
+      cards: [
+        {
+          title: '一人きりの独り言',
+          desc: '1対1の録画形式では、面接会場の張り詰めた空気を再現できません。',
+        },
+        {
+          title: 'メンタル崩壊',
+          desc: '実際の不合格の最大の原因は、隣の候補者の流暢な回答による比較と萎縮です。',
+        },
+        {
+          title: 'ありきたりな質問',
+          desc: 'あなたの回答を聞かず、用意された質問だけを投げるボットは、実力向上に役立ちません。',
+        },
+      ],
+    },
+    features: {
+      title: ['圧倒的な実戦感覚、', 'MAJUの3つの強み'],
+      items: [
+        {
+          title: '完全再現の「ピアプレッシャー」',
+          desc: 'あなたより流暢に答える仮想ライバルAIを配置し、実戦の面接会場の張り詰めた緊張感をそのまま再現。隣の回答にペースを乱さない強力なメンタルトレーニングを始めましょう。',
+        },
+        {
+          title: '視線とペースを支える「リアルタイムHUDコーチ」',
+          desc: '回答中に視線が泳いだり話す速さが上がると、画面隅に静かに警告とガイドを表示。面接後ではなく、その場でフィードバックを生成します。',
+        },
+        {
+          title: 'あなた専用の「AI面接官ペルソナ」',
+          desc: '準備中の求人票や面接攻略本を入力。穏やかな傾聴型から鋭い追撃質問で圧迫する面接官まで、あなただけの完璧なカスタム環境を提供します。',
+        },
+      ],
+      visual: {
+        me: '自分',
+        candidate: '候補者',
+        peerBanner: '隣の候補者の模範回答を再生中…',
+        gaze: '視線を固定',
+        speed: '話速 ↑',
+        personas: ['穏やかな傾聴型', '圧迫面接官', '追撃質問型'],
+      },
+    },
+    reverse: {
+      title: [
+        'グループ面接がない？',
+        '最辛レベルで鍛えれば、',
+        '1対1は会話のように楽になります。',
+      ],
+      desc: '本番で起こりうる最悪の圧迫状況を経験すれば、どんな面接でも自分のペースを保てます。',
+    },
+    cta: {
+      title: [
+        '面接会場の息苦しい緊張感、',
+        'MAJUと一緒なら',
+        '爽やかな自信に変わります。',
       ],
     },
     footer: '© 2026 MAJU. All rights reserved.',

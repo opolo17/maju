@@ -1,19 +1,23 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   User,
   Brain,
   MessageSquare,
   ArrowUp,
+  Check,
+  ChevronDown,
   CheckCircle2,
+  Languages,
   Mic,
   MicOff,
   Video,
   VideoOff,
-  Sparkles,
   AlertTriangle,
+  Sparkles,
   Target,
 } from 'lucide-react';
 import { useLanguage } from './LanguageContext.jsx';
+import { LANGUAGES } from './i18n.js';
 
 const PAIN_ICONS = [User, Brain, MessageSquare];
 const FEATURE_VISUALS = ['peers', 'hud', 'persona'];
@@ -143,39 +147,90 @@ function HeroHeadlineLine({ line, mark }) {
   );
 }
 
-function LangToggle() {
-  const { lang, toggleLang, t } = useLanguage();
-  const isKo = lang === 'ko';
+function LanguageSelect() {
+  const { lang, setLang, t } = useLanguage();
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef(null);
+
+  const current = LANGUAGES.find((item) => item.code === lang);
+
+  useEffect(() => {
+    const handlePointerDown = (event) => {
+      if (rootRef.current && !rootRef.current.contains(event.target)) {
+        setOpen(false);
+      }
+    };
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') setOpen(false);
+    };
+
+    document.addEventListener('mousedown', handlePointerDown);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   return (
-    <button
-      type="button"
-      onClick={toggleLang}
-      className="relative inline-flex h-8 w-[4.25rem] shrink-0 rounded-full border border-gray-200 bg-[#F8FAFC] p-0.5"
-      aria-label={t.langToggle}
-      aria-pressed={!isKo}
-    >
-      <span
-        aria-hidden
-        className={`pointer-events-none absolute top-0.5 bottom-0.5 left-0.5 w-[calc(50%-2px)] rounded-full bg-white shadow-sm transition-transform duration-300 ease-in-out ${
-          isKo ? 'translate-x-0' : 'translate-x-[calc(100%+4px)]'
-        }`}
-      />
-      <span
-        className={`relative z-10 flex flex-1 items-center justify-center text-xs font-bold uppercase tracking-tight transition-colors duration-300 ${
-          isKo ? 'text-[#2A2A2A]' : 'text-[#64748B]'
-        }`}
+    <div ref={rootRef} className="relative shrink-0">
+      <button
+        type="button"
+        onClick={() => setOpen((prev) => !prev)}
+        aria-label={t.langSelect}
+        aria-expanded={open}
+        aria-haspopup="listbox"
+        className="flex h-9 items-center gap-2 rounded-full border border-gray-200 bg-white/90 px-3.5 py-2 text-xs font-semibold tracking-tight text-[#2A2A2A] shadow-sm backdrop-blur-sm transition hover:border-[#2AD175]/50 focus:border-[#2AD175] focus:outline-none focus:ring-2 focus:ring-[#2AD175]/20"
       >
-        ko
-      </span>
-      <span
-        className={`relative z-10 flex flex-1 items-center justify-center text-xs font-bold uppercase tracking-tight transition-colors duration-300 ${
-          isKo ? 'text-[#64748B]' : 'text-[#2A2A2A]'
-        }`}
-      >
-        en
-      </span>
-    </button>
+        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-br from-[#2AD175]/20 to-[#E3F58F]/40">
+          <Languages className="h-3 w-3 text-[#2A2A2A]" strokeWidth={2.25} />
+        </span>
+        <span className="max-w-[5.5rem] truncate sm:max-w-none">{current?.label}</span>
+        <ChevronDown
+          className={`h-3.5 w-3.5 shrink-0 text-[#64748B] transition-transform duration-200 ${
+            open ? 'rotate-180' : ''
+          }`}
+          aria-hidden
+        />
+      </button>
+
+      {open && (
+        <ul
+          role="listbox"
+          aria-label={t.langSelect}
+          className="absolute right-0 top-[calc(100%+0.5rem)] z-50 min-w-[10.5rem] overflow-hidden rounded-2xl border border-gray-100 bg-white p-1.5 shadow-xl shadow-gray-200/70"
+        >
+          <li className="mb-1 px-2 pt-1">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-[#94A3B8]">
+              {t.langMenuTitle}
+            </span>
+          </li>
+          {LANGUAGES.map(({ code, label }) => {
+            const selected = lang === code;
+            return (
+              <li key={code} role="option" aria-selected={selected}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLang(code);
+                    setOpen(false);
+                  }}
+                  className={`flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2.5 text-left text-xs font-semibold tracking-tight transition ${
+                    selected
+                      ? 'bg-gradient-to-r from-[#2AD175] to-[#E3F58F] text-[#2A2A2A] shadow-sm'
+                      : 'text-[#64748B] hover:bg-[#F8FAFC] hover:text-[#2A2A2A]'
+                  }`}
+                >
+                  {label}
+                  {selected && <Check className="h-3.5 w-3.5 shrink-0" strokeWidth={2.5} />}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </div>
   );
 }
 
@@ -187,13 +242,15 @@ function BenefitEmphasis({ children }) {
   );
 }
 
-function EarlyBirdBenefit({ className = '' }) {
+function EarlyBirdBenefit({ className = '', alwaysCenter = false }) {
   const { t } = useLanguage();
   const b = t.benefit;
 
   return (
     <p
-      className={`text-center text-base leading-[1.85] text-[#64748B] sm:text-left sm:text-lg sm:leading-relaxed ${className}`}
+      className={`text-center text-base leading-[1.85] text-[#64748B] sm:text-lg sm:leading-relaxed ${
+        alwaysCenter ? '' : 'sm:text-left'
+      } ${className}`}
     >
       <span className="inline sm:inline">
         {b.prefix}{' '}
@@ -499,7 +556,7 @@ export default function App() {
             alt="MAJU"
             className="h-7 w-auto object-contain sm:h-8"
           />
-          <LangToggle />
+          <LanguageSelect />
         </nav>
       </header>
 
@@ -562,8 +619,8 @@ export default function App() {
         </section>
 
         {/* 4. Features */}
-        <section className="mx-auto max-w-7xl px-6 py-24">
-          <h2 className="mb-16 text-center text-3xl font-bold leading-snug text-[#2A2A2A] lg:text-4xl">
+        <section className="mx-auto max-w-7xl px-6 py-24 max-lg:bg-[#F8FAFC] lg:bg-transparent">
+          <h2 className="mb-10 text-center text-3xl font-bold leading-snug text-[#2A2A2A] lg:mb-16 lg:text-4xl">
             {t.features.title.map((line, i) => (
               <span key={line}>
                 {i > 0 && <br />}
@@ -571,18 +628,18 @@ export default function App() {
               </span>
             ))}
           </h2>
-          <div className="space-y-20 lg:space-y-28">
+          <div className="space-y-6 lg:space-y-28">
             {t.features.items.map((feature, index) => (
               <div
                 key={feature.title}
-                className={`flex w-full flex-col items-stretch gap-10 lg:gap-16 ${
+                className={`flex w-full flex-col items-stretch gap-8 overflow-hidden max-lg:rounded-2xl max-lg:border max-lg:border-gray-200 max-lg:bg-white max-lg:p-5 max-lg:shadow-sm lg:gap-16 ${
                   index % 2 === 1 ? 'lg:flex-row-reverse' : 'lg:flex-row'
                 }`}
               >
                 <div className="w-full lg:flex-1">
                   <FeatureVisual type={FEATURE_VISUALS[index]} />
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 max-lg:border-t max-lg:border-gray-100 max-lg:pt-6 lg:border-0 lg:pt-0">
                   <h3 className="mb-4 text-xl font-bold text-[#2A2A2A] lg:text-2xl">
                     {feature.title}
                   </h3>
@@ -621,7 +678,7 @@ export default function App() {
               <span className="hidden sm:inline">&nbsp;</span>
               {t.cta.title[2]}
             </h2>
-            <EarlyBirdBenefit className="mb-8" />
+            <EarlyBirdBenefit className="mb-8" alwaysCenter />
             <div className="flex justify-center">
               <WaitlistForm className="justify-center" />
             </div>

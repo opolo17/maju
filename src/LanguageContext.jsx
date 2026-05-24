@@ -3,10 +3,16 @@ import { COPY } from './i18n';
 
 const LanguageContext = createContext(null);
 
+const SUPPORTED_LANGS = ['ko', 'en', 'ja'];
+
 function getInitialLang() {
   const saved = localStorage.getItem('maju-lang');
-  if (saved === 'ko' || saved === 'en') return saved;
-  return navigator.language.startsWith('ko') ? 'ko' : 'en';
+  if (SUPPORTED_LANGS.includes(saved)) return saved;
+
+  const nav = navigator.language.toLowerCase();
+  if (nav.startsWith('ko')) return 'ko';
+  if (nav.startsWith('ja')) return 'ja';
+  return 'en';
 }
 
 export function LanguageProvider({ children }) {
@@ -17,12 +23,15 @@ export function LanguageProvider({ children }) {
     document.documentElement.lang = lang;
   }, [lang]);
 
+  const setLanguage = (next) => {
+    if (SUPPORTED_LANGS.includes(next)) setLang(next);
+  };
+
   const value = useMemo(
     () => ({
       lang,
       t: COPY[lang],
-      setLang,
-      toggleLang: () => setLang((prev) => (prev === 'ko' ? 'en' : 'ko')),
+      setLang: setLanguage,
     }),
     [lang],
   );
