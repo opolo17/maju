@@ -132,6 +132,14 @@ function MarkerHighlight({ children }) {
   );
 }
 
+function HeroDescHighlight({ children }) {
+  return (
+    <span className="mt-3 block text-lg font-extrabold leading-snug tracking-tight text-[#2A2A2A] lg:text-xl">
+      {children}
+    </span>
+  );
+}
+
 function HeroHeadlineLine({ line, mark }) {
   if (!mark) return line;
 
@@ -578,7 +586,8 @@ export default function App() {
               ))}
             </h1>
             <p className="mb-8 text-base leading-relaxed text-[#64748B] lg:text-lg">
-              {t.hero.desc}
+              {t.hero.descLead}
+              <HeroDescHighlight>{t.hero.descHighlight}</HeroDescHighlight>
             </p>
             <WaitlistForm />
             <EarlyBirdBenefit className="mt-4" />

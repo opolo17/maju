@@ -1,22 +1,17 @@
 {
-  "name": "maju-waitlist",
+  "name": "maju",
   "private": true,
   "version": "0.0.1",
-  "type": "module",
+  "workspaces": [
+    "apps/*"
+  ],
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "lucide-react": "^0.511.0",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0"
-  },
-  "devDependencies": {
-    "@tailwindcss/vite": "^4.1.8",
-    "@vitejs/plugin-react": "^4.5.2",
-    "tailwindcss": "^4.1.8",
-    "vite": "^6.3.5"
+    "dev:landing": "npm run dev -w @maju/landing",
+    "dev:web": "npm run dev -w @maju/web",
+    "build:landing": "npm run build -w @maju/landing",
+    "build:web": "npm run build -w @maju/web",
+    "build": "npm run build:landing && npm run build:web",
+    "preview:landing": "npm run preview -w @maju/landing",
+    "preview:web": "npm run preview -w @maju/web"
   }
 }
