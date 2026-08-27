@@ -9,6 +9,15 @@ MAJU/
 ├── apps/
 │   ├── landing/          # Waitlist · 마케팅 랜딩 페이지 (기존 작업물)
 │   └── web/              # 실제 서비스 웹 (면접 시뮬레이션 앱)
+├── packages/
+│   ├── types/            # 공유 TypeScript 타입
+│   └── ui/               # 공유 React UI 컴포넌트
+├── services/
+│   └── api/              # Hono API 서버
+├── supabase/
+│   └── migrations/       # DB 스키마 SQL
+├── docs/
+│   └── IMPLEMENTATION_PLAN.md
 ├── package.json          # npm workspaces 루트
 └── README.md
 ```
@@ -21,8 +30,22 @@ MAJU/
 
 ### `apps/web`
 
-- 로그인, 면접 시뮬레이션, 대시보드 등 **실제 제품** 개발용
-- 현재는 스캐폴드만 포함 (추후 기능 추가)
+- 로그인, 면접 시뮬레이션, 대시보드 등 **실제 제품**
+- Phase 0: React Router, Supabase Auth shell, 대시보드 placeholder
+
+### `packages/types` · `packages/ui`
+
+- 앱 간 공유 타입·UI (`@maju/types`, `@maju/ui`)
+
+### `services/api`
+
+- Hono API (`GET /health`, `GET /me`)
+- 로컬: `npm run dev:api` → http://localhost:3001
+
+### Supabase
+
+- Auth + PostgreSQL — 설정은 [`supabase/README.md`](supabase/README.md)
+- env 템플릿: [`.env.example`](.env.example)
 
 ## 실행 방법
 
@@ -36,6 +59,7 @@ npm install
 |------|------|-----|
 | `npm run dev:landing` | 랜딩 개발 서버 | http://localhost:5173 |
 | `npm run dev:web` | 서비스 웹 개발 서버 | http://localhost:5174 |
+| `npm run dev:api` | API 개발 서버 | http://localhost:3001 |
 | `npm run build:landing` | 랜딩 프로덕션 빌드 | `apps/landing/dist` |
 | `npm run build:web` | 서비스 웹 프로덕션 빌드 | `apps/web/dist` |
 | `npm run build` | 전체 빌드 | |

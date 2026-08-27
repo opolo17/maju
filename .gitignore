@@ -3,5 +3,14 @@ dist
 .DS_Store
 *.local
 
+# Environment
+.env
+.env.local
+.env.*.local
+apps/web/.env.local
+services/api/.env
+
 # npm workspaces
 apps/*/node_modules
+packages/*/node_modules
+services/*/node_modules
