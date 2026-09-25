@@ -111,3 +111,5 @@ npm install
 
 SheetDB 등은 랜딩 코드에 URL이 포함되어 있으면 Vercel env 없이 동작합니다.  
 나중에 API 키를 분리하면 **랜딩 프로젝트**에만 Environment Variables 추가하면 됩니다.
+
+**서비스 웹·API·Supabase 프로덕션 배포:** [`docs/DEPLOY.md`](docs/DEPLOY.md)

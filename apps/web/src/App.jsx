@@ -1,9 +1,12 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
+import RequireOnboarding from './components/RequireOnboarding.jsx';
 import AppLayout from './layouts/AppLayout.jsx';
 import InterviewLayout from './layouts/InterviewLayout.jsx';
 import DashboardPage from './pages/DashboardPage.jsx';
+import SessionsPage from './pages/SessionsPage.jsx';
+import InsightsPage from './pages/InsightsPage.jsx';
 import HomePage from './pages/HomePage.jsx';
 import InterviewReportPage from './pages/InterviewReportPage.jsx';
 import InterviewPocPage from './pages/InterviewPocPage.jsx';
@@ -12,8 +15,12 @@ import InterviewLivePage from './pages/InterviewLivePage.jsx';
 import InterviewLobbyPage from './pages/InterviewLobbyPage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import NewInterviewPage from './pages/NewInterviewPage.jsx';
+import OnboardingPage from './pages/OnboardingPage.jsx';
+import SettingsPage from './pages/SettingsPage.jsx';
+import PricingPage from './pages/PricingPage.jsx';
 import SetupPage from './pages/SetupPage.jsx';
 import SignupPage from './pages/SignupPage.jsx';
+import { isDevToolsEnabled } from './lib/dev.js';
 
 export default function App() {
   return (
@@ -26,17 +33,29 @@ export default function App() {
           <Route path="/signup" element={<SignupPage />} />
 
           <Route element={<ProtectedRoute />}>
-            <Route element={<AppLayout />}>
-              <Route path="/dashboard" element={<DashboardPage />} />
-              <Route path="/interview/new" element={<NewInterviewPage />} />
-              <Route path="/interview/poc" element={<InterviewPocPage />} />
-              <Route path="/interview/:id/report" element={<InterviewReportPage />} />
-            </Route>
+            <Route path="/onboarding" element={<OnboardingPage />} />
 
-            <Route element={<InterviewLayout />}>
-              <Route path="/interview/demo" element={<InterviewDemoPage />} />
-              <Route path="/interview/:id/lobby" element={<InterviewLobbyPage />} />
-              <Route path="/interview/:id/live" element={<InterviewLivePage />} />
+            <Route element={<RequireOnboarding />}>
+              <Route element={<AppLayout />}>
+                <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/sessions" element={<SessionsPage />} />
+                <Route path="/insights" element={<InsightsPage />} />
+                <Route path="/settings" element={<SettingsPage />} />
+                <Route path="/pricing" element={<PricingPage />} />
+                <Route path="/interview/new" element={<NewInterviewPage />} />
+                {isDevToolsEnabled ? (
+                  <Route path="/interview/poc" element={<InterviewPocPage />} />
+                ) : null}
+                <Route path="/interview/:id/report" element={<InterviewReportPage />} />
+              </Route>
+
+              <Route element={<InterviewLayout />}>
+                {isDevToolsEnabled ? (
+                  <Route path="/interview/demo" element={<InterviewDemoPage />} />
+                ) : null}
+                <Route path="/interview/:id/lobby" element={<InterviewLobbyPage />} />
+                <Route path="/interview/:id/live" element={<InterviewLivePage />} />
+              </Route>
             </Route>
           </Route>
 

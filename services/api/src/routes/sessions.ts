@@ -7,7 +7,8 @@ import type {
 } from '@maju/types';
 import { Hono } from 'hono';
 import { env } from '../env.js';
-import { endLiveSession, processLiveTurn, startLiveSession } from '../lib/live-session.js';
+import { deliverClosingRemark, endLiveSession, processLiveTurn, startLiveSession } from '../lib/live-session.js';
+import { generatePeerPersonas } from '../lib/peer-personas.js';
 import { getSupabaseAdmin } from '../lib/supabase.js';
 import { mapSessionRow, parseInterviewConfig } from '../lib/sessions.js';
 import { listSessionTurns, fetchSessionForUser } from '../lib/session-turns.js';
@@ -48,6 +49,9 @@ sessions.post('/', requireAuth, async (c) => {
     );
   }
 
+  const peerPersonas = await generatePeerPersonas(config);
+  const configWithPeers = { ...config, peerPersonas };
+
   const userId = c.get('userId') as string;
   const supabase = getSupabaseAdmin();
 
@@ -56,7 +60,7 @@ sessions.post('/', requireAuth, async (c) => {
     .insert({
       user_id: userId,
       status: 'draft',
-      config,
+      config: configWithPeers,
     })
     .select('id, user_id, status, config, started_at, ended_at, report, created_at')
     .single();
@@ -142,6 +146,23 @@ sessions.post('/:id/turn', requireAuth, async (c) => {
   }
 });
 
+sessions.post('/:id/closing', requireAuth, async (c) => {
+  const blocked = openaiGuard(c);
+  if (blocked) return blocked;
+
+  const userId = c.get('userId') as string;
+  const sessionId = c.req.param('id') as string;
+
+  try {
+    const result = await deliverClosingRemark(sessionId, userId);
+    return c.json(result);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Closing failed';
+    const status = message === 'Session not found' ? 404 : 400;
+    return c.json({ error: 'session_closing_failed', message }, status);
+  }
+});
+
 sessions.post('/:id/end', requireAuth, async (c) => {
   const blocked = openaiGuard(c);
   if (blocked) return blocked;
@@ -207,8 +228,11 @@ sessions.get('/:id/report', requireAuth, async (c) => {
 
   try {
     const allTurns = await listSessionTurns(sessionId);
-    const turns = allTurns.filter(
-      (turn) => turn.role === 'user' || turn.role === 'interviewer',
+    const turns = allTurns.filter((turn) =>
+      turn.role === 'user'
+      || turn.role === 'interviewer'
+      || turn.role === 'peer1'
+      || turn.role === 'peer2',
     );
     const response: ApiSessionReportResponse = {
       session,
@@ -220,6 +244,29 @@ sessions.get('/:id/report', requireAuth, async (c) => {
     const message = err instanceof Error ? err.message : 'Fetch report failed';
     return c.json({ error: 'report_fetch_failed', message }, 500);
   }
+});
+
+sessions.delete('/:id', requireAuth, async (c) => {
+  const userId = c.get('userId') as string;
+  const sessionId = c.req.param('id') as string;
+  const row = await fetchSessionForUser(sessionId, userId);
+
+  if (!row) {
+    return c.json({ error: 'not_found', message: 'Session not found' }, 404);
+  }
+
+  const supabase = getSupabaseAdmin();
+  const { error } = await supabase
+    .from('interview_sessions')
+    .delete()
+    .eq('id', sessionId)
+    .eq('user_id', userId);
+
+  if (error) {
+    return c.json({ error: 'session_delete_failed', message: error.message }, 500);
+  }
+
+  return c.json({ ok: true });
 });
 
 sessions.get('/:id', requireAuth, async (c) => {

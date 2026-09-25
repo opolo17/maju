@@ -5,11 +5,25 @@
   --font-sans:
     'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
     system-ui, sans-serif;
+
+  /* MAJU brand palette (landing / design tokens) */
+  --color-maju-text: #2a2a2a;
+  --color-maju-muted: #64748b;
+  --color-maju-subtle: #94a3b8;
+  --color-maju-surface: #f8fafc;
+  --color-maju-border: #e5e7eb;
+  --color-maju-accent: #2ad175;
+  --color-maju-highlight: #e3f58f;
+
+  /* Interview (dark) zone */
+  --color-maju-dark: #0a0a0a;
+  --color-maju-dark-panel: #1a1a1a;
+  --color-maju-dark-elevated: #2d2d2d;
 }
 
 body {
   font-family: var(--font-sans);
-  color: #2a2a2a;
+  color: var(--color-maju-text);
   background-color: #ffffff;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

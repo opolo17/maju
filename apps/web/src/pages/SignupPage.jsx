@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { Input } from '@maju/ui';
+import { Alert, Input } from '@maju/ui';
 import { useAuth } from '../context/AuthContext.jsx';
+import { useI18n } from '../i18n/LanguageContext.jsx';
 import AuthLayout, {
   AuthError,
   AuthFooterLink,
@@ -10,6 +11,7 @@ import AuthLayout, {
 
 export default function SignupPage() {
   const { signUp, user, isConfigured } = useAuth();
+  const { t } = useI18n();
   const navigate = useNavigate();
 
   const [displayName, setDisplayName] = useState('');
@@ -35,28 +37,24 @@ export default function SignupPage() {
 
     try {
       await signUp(email.trim(), password, displayName.trim());
-      setSuccess('가입이 완료되었습니다. 이메일 확인이 필요하면 메일함을 확인해 주세요.');
-      navigate('/dashboard', { replace: true });
+      setSuccess(t('auth.signupSuccess'));
+      navigate('/onboarding', { replace: true });
     } catch (err) {
-      setError(err.message ?? '회원가입에 실패했습니다.');
+      setError(err.message ?? t('auth.signupFailed'));
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <AuthLayout title="회원가입" subtitle="실전 다대다 면접 훈련을 시작해 보세요.">
+    <AuthLayout title={t('auth.signupTitle')} subtitle={t('auth.signupSubtitle')}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <AuthError message={error} />
-        {success ? (
-          <p className="rounded-xl border border-[#2AD175]/30 bg-[#E3F58F]/20 px-4 py-3 text-sm text-[#2A2A2A]">
-            {success}
-          </p>
-        ) : null}
+        {success ? <Alert variant="success">{success}</Alert> : null}
 
         <div>
-          <label htmlFor="displayName" className="mb-1.5 block text-sm font-medium text-[#64748B]">
-            이름 (선택)
+          <label htmlFor="displayName" className="mb-1.5 block text-sm font-medium text-maju-muted">
+            {t('auth.displayName')}
           </label>
           <Input
             id="displayName"
@@ -64,13 +62,13 @@ export default function SignupPage() {
             autoComplete="name"
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
-            placeholder="홍길동"
+            placeholder={t('auth.displayNamePlaceholder')}
           />
         </div>
 
         <div>
-          <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-[#64748B]">
-            이메일
+          <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-maju-muted">
+            {t('auth.email')}
           </label>
           <Input
             id="email"
@@ -84,8 +82,8 @@ export default function SignupPage() {
         </div>
 
         <div>
-          <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-[#64748B]">
-            비밀번호
+          <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-maju-muted">
+            {t('auth.password')}
           </label>
           <Input
             id="password"
@@ -95,14 +93,18 @@ export default function SignupPage() {
             minLength={8}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="8자 이상"
+            placeholder={t('auth.passwordMinPlaceholder')}
           />
         </div>
 
-        <AuthSubmitButton loading={loading}>계정 만들기</AuthSubmitButton>
+        <AuthSubmitButton loading={loading}>{t('auth.signupSubmit')}</AuthSubmitButton>
       </form>
 
-      <AuthFooterLink prompt="이미 계정이 있으신가요?" linkText="로그인" to="/login" />
+      <AuthFooterLink
+        prompt={t('auth.hasAccount')}
+        linkText={t('auth.loginLink')}
+        to="/login"
+      />
     </AuthLayout>
   );
 }

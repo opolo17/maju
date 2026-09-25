@@ -11,6 +11,7 @@
     "dev:landing": "npm run dev -w @maju/landing",
     "dev:web": "npm run dev -w @maju/web",
     "dev:api": "npm run dev -w @maju/api",
+    "start:api": "npm run start -w @maju/api",
     "build:landing": "npm run build -w @maju/landing",
     "build:web": "npm run build -w @maju/web",
     "build": "npm run build:landing && npm run build:web",

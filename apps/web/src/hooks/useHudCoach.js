@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { createHudMetricsPayload } from '../lib/hud-metrics.js';
-import { HUD_MESSAGES } from '../constants/hud.js';
+import { useInterviewLabels } from '../i18n/interviewLabels.js';
 import { useGazeDetection } from './useGazeDetection.js';
 import { useSpeechPace } from './useSpeechPace.js';
 
@@ -12,14 +12,9 @@ export function useHudCoach({
   enabled = true,
   trackMetrics = true,
 }) {
+  const { hudMessages } = useInterviewLabels();
+  /** Points at the visible "me" tile video (set by InterviewRoom). */
   const analysisVideoRef = useRef(null);
-
-  useEffect(() => {
-    const video = analysisVideoRef.current;
-    if (!video || !stream) return;
-    video.srcObject = stream;
-    video.play().catch(() => {});
-  }, [stream]);
 
   const { alert: speedAlert, getMetrics: getSpeechMetrics } = useSpeechPace({
     micEnabled,
@@ -29,7 +24,7 @@ export function useHudCoach({
   const { alert: gazeAlert, getMetrics: getGazeMetrics } = useGazeDetection({
     videoRef: analysisVideoRef,
     camEnabled,
-    enabled: enabled && Boolean(stream),
+    enabled: enabled && Boolean(stream) && camEnabled,
   });
 
   const getHudMetrics = useCallback(
@@ -44,16 +39,16 @@ export function useHudCoach({
   const alerts = useMemo(() => {
     const items = [];
     if (speedAlert) {
-      items.push({ id: 'speed', type: 'speed', message: HUD_MESSAGES.speed });
+      items.push({ id: 'speed', type: 'speed', message: hudMessages.speed });
     }
     if (gazeAlert === 'gaze') {
-      items.push({ id: 'gaze', type: 'gaze', message: HUD_MESSAGES.gaze });
+      items.push({ id: 'gaze', type: 'gaze', message: hudMessages.gaze });
     }
     if (gazeAlert === 'noFace') {
-      items.push({ id: 'noFace', type: 'gaze', message: HUD_MESSAGES.noFace });
+      items.push({ id: 'noFace', type: 'gaze', message: hudMessages.noFace });
     }
     return items;
-  }, [speedAlert, gazeAlert]);
+  }, [speedAlert, gazeAlert, hudMessages]);
 
   return { alerts, analysisVideoRef, getHudMetrics };
 }

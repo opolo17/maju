@@ -14,3 +14,24 @@ export const INTERVIEW_PARTICIPANTS = [
 
 export const DEMO_QUESTION =
   '먼저, 지원 동기와 해당 직무에 본인이 적합하다고 생각하는 이유를 1분 내외로 말씀해 주세요.';
+
+export function buildInterviewParticipants(config) {
+  const peers = config?.peerPersonas;
+  return INTERVIEW_PARTICIPANTS.map((participant) => {
+    if (participant.key === 'peer1' && peers?.peer1) {
+      return {
+        ...participant,
+        label: peers.peer1.name,
+        sub: `${peers.peer1.headline} · 모범`,
+      };
+    }
+    if (participant.key === 'peer2' && peers?.peer2) {
+      return {
+        ...participant,
+        label: peers.peer2.name,
+        sub: `${peers.peer2.headline} · 경쟁`,
+      };
+    }
+    return participant;
+  });
+}

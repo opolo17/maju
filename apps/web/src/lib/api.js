@@ -107,6 +107,10 @@ export function endSession(id, hudMetrics) {
   });
 }
 
+export function requestClosingRemark(id) {
+  return apiFetch(`/sessions/${id}/closing`, { method: 'POST' });
+}
+
 export function getSessionTurns(id) {
   return apiFetch(`/sessions/${id}/turns`);
 }
@@ -115,8 +119,32 @@ export function getSessionReport(id) {
   return apiFetch(`/sessions/${id}/report`);
 }
 
+export function deleteSession(id) {
+  return apiFetch(`/sessions/${id}`, { method: 'DELETE' });
+}
+
 export function retrySession(config) {
   return createSession(config);
+}
+
+let currentAudio = null;
+/** @type {Set<(result: { interrupted: boolean }) => void>} */
+const interruptWaiters = new Set();
+
+export function stopInterviewAudio() {
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio.currentTime = 0;
+    const url = currentAudio.src;
+    currentAudio = null;
+    if (url?.startsWith('blob:')) {
+      URL.revokeObjectURL(url);
+    }
+  }
+  for (const resolve of interruptWaiters) {
+    resolve({ interrupted: true });
+  }
+  interruptWaiters.clear();
 }
 
 export function playBase64Audio(audioBase64, mimeType = 'audio/mpeg') {
@@ -124,12 +152,37 @@ export function playBase64Audio(audioBase64, mimeType = 'audio/mpeg') {
   return audio.play();
 }
 
+/**
+ * @returns {Promise<{ interrupted: boolean }>}
+ */
 export function playBase64AudioAndWait(audioBase64, mimeType = 'audio/mpeg') {
-  const audio = createAudioFromBase64(audioBase64, mimeType);
   return new Promise((resolve, reject) => {
-    audio.onended = () => resolve();
-    audio.onerror = () => reject(new Error('Audio playback failed'));
-    audio.play().catch(reject);
+    const finish = (result) => {
+      interruptWaiters.delete(onInterrupt);
+      resolve(result);
+    };
+
+    const onInterrupt = () => finish({ interrupted: true });
+    interruptWaiters.add(onInterrupt);
+
+    const audio = createAudioFromBase64(audioBase64, mimeType);
+    currentAudio = audio;
+
+    audio.onended = () => {
+      if (currentAudio === audio) currentAudio = null;
+      finish({ interrupted: false });
+    };
+    audio.onerror = () => {
+      if (currentAudio === audio) currentAudio = null;
+      interruptWaiters.delete(onInterrupt);
+      reject(new Error('Audio playback failed'));
+    };
+
+    audio.play().catch((err) => {
+      if (currentAudio === audio) currentAudio = null;
+      interruptWaiters.delete(onInterrupt);
+      reject(err);
+    });
   });
 }
 
@@ -142,6 +195,8 @@ function createAudioFromBase64(audioBase64, mimeType) {
   const blob = new Blob([bytes], { type: mimeType });
   const url = URL.createObjectURL(blob);
   const audio = new Audio(url);
-  audio.onended = () => URL.revokeObjectURL(url);
+  audio.onended = () => {
+    if (url.startsWith('blob:')) URL.revokeObjectURL(url);
+  };
   return audio;
 }

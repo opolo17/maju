@@ -62,6 +62,13 @@ export function AuthProvider({ children }) {
         const { error } = await client.auth.signOut();
         if (error) throw error;
       },
+      async updateDisplayName(displayName) {
+        const client = requireSupabase();
+        const { error } = await client.auth.updateUser({
+          data: { display_name: displayName || undefined },
+        });
+        if (error) throw error;
+      },
     }),
     [session, loading],
   );

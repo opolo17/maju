@@ -1,11 +1,12 @@
+import { inputFocusClass } from './tokens.js';
+
 const baseClass =
-  'w-full rounded-xl px-4 tracking-tight outline-none transition-shadow disabled:opacity-60';
+  'w-full rounded-lg px-3.5 outline-none transition-colors disabled:opacity-60';
 
 const variants = {
-  default:
-    'border-2 border-gray-200 bg-white py-3 text-base font-medium text-[#2A2A2A] shadow-sm placeholder:font-normal placeholder:text-[#64748B] focus:border-[#2AD175] focus:ring-2 focus:ring-[#2AD175]/25',
+  default: `border border-gray-200 bg-white py-2.5 text-sm text-maju-text placeholder:text-maju-subtle ${inputFocusClass}`,
   subtle:
-    'border border-dashed border-gray-200 bg-[#F8FAFC] py-2.5 text-sm text-[#64748B] placeholder:text-[#94A3B8] focus:border-[#2AD175]/60 focus:ring-1 focus:ring-[#2AD175]/15',
+    'border border-gray-200 bg-maju-surface py-2.5 text-sm text-maju-text placeholder:text-maju-subtle focus:border-maju-text/30 focus:ring-2 focus:ring-maju-text/10',
 };
 
 export function Input({ variant = 'default', className = '', ...props }) {

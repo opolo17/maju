@@ -1,21 +1,48 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { FaceLandmarker, FilesetResolver } from '@mediapipe/tasks-vision';
 
-const WASM_BASE = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm';
+const WASM_BASE = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.0.1/wasm';
 const MODEL_URL =
   'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task';
 
+const DEBUG =
+  import.meta.env.DEV
+  || (typeof window !== 'undefined'
+    && new URLSearchParams(window.location.search).has('hudDebug'));
+
 let landmarkerPromise = null;
+
+function logGaze(label, payload) {
+  if (!DEBUG) return;
+  console.log(`[HUD gaze] ${label}`, payload);
+}
+
+async function createLandmarker(vision, delegate) {
+  return FaceLandmarker.createFromOptions(vision, {
+    baseOptions: { modelAssetPath: MODEL_URL, delegate },
+    runningMode: 'VIDEO',
+    numFaces: 1,
+  });
+}
 
 function loadFaceLandmarker() {
   if (!landmarkerPromise) {
-    landmarkerPromise = FilesetResolver.forVisionTasks(WASM_BASE).then((vision) =>
-      FaceLandmarker.createFromOptions(vision, {
-        baseOptions: { modelAssetPath: MODEL_URL, delegate: 'GPU' },
-        runningMode: 'VIDEO',
-        numFaces: 1,
-      }),
-    );
+    landmarkerPromise = (async () => {
+      const vision = await FilesetResolver.forVisionTasks(WASM_BASE);
+      try {
+        const gpu = await createLandmarker(vision, 'GPU');
+        logGaze('ready', { delegate: 'GPU' });
+        return gpu;
+      } catch (gpuError) {
+        logGaze('gpu failed, fallback CPU', { message: gpuError.message });
+        const cpu = await createLandmarker(vision, 'CPU');
+        logGaze('ready', { delegate: 'CPU' });
+        return cpu;
+      }
+    })().catch((err) => {
+      landmarkerPromise = null;
+      throw err;
+    });
   }
   return landmarkerPromise;
 }
@@ -24,10 +51,12 @@ function loadFaceLandmarker() {
 export function useGazeDetection({ videoRef, camEnabled, enabled = true }) {
   const [alert, setAlert] = useState(null);
   const [ready, setReady] = useState(false);
-  const lastAlertRef = useRef(0);
+  const lastGazeAlertRef = useRef(0);
+  const lastNoFaceAlertRef = useRef(0);
   const rafRef = useRef(null);
   const gazeAwayAlertsRef = useRef(0);
   const noFaceAlertsRef = useRef(0);
+  const lastDebugLogAtRef = useRef(0);
 
   const getMetrics = useCallback(() => ({
     gazeAwayAlerts: gazeAwayAlertsRef.current,
@@ -37,6 +66,7 @@ export function useGazeDetection({ videoRef, camEnabled, enabled = true }) {
   useEffect(() => {
     if (!enabled || !camEnabled) {
       setAlert(null);
+      setReady(false);
       return undefined;
     }
 
@@ -46,7 +76,8 @@ export function useGazeDetection({ videoRef, camEnabled, enabled = true }) {
       .then(() => {
         if (!cancelled) setReady(true);
       })
-      .catch(() => {
+      .catch((err) => {
+        logGaze('init failed', { message: err.message });
         if (!cancelled) setReady(false);
       });
 
@@ -79,10 +110,11 @@ export function useGazeDetection({ videoRef, camEnabled, enabled = true }) {
           const landmarks = result.faceLandmarks?.[0];
 
           if (!landmarks) {
-            if (Date.now() - lastAlertRef.current > 6000) {
-              lastAlertRef.current = Date.now();
+            if (Date.now() - lastNoFaceAlertRef.current > 6000) {
+              lastNoFaceAlertRef.current = Date.now();
               noFaceAlertsRef.current += 1;
               setAlert('noFace');
+              logGaze('ALERT noFace', { count: noFaceAlertsRef.current });
               setTimeout(() => setAlert(null), 3000);
             }
           } else {
@@ -93,15 +125,25 @@ export function useGazeDetection({ videoRef, camEnabled, enabled = true }) {
             const faceWidth = Math.abs(rightCheek.x - leftCheek.x) || 0.001;
             const offset = Math.abs(nose.x - faceCenterX) / faceWidth;
 
-            if (offset > 0.14 && Date.now() - lastAlertRef.current > 5000) {
-              lastAlertRef.current = Date.now();
+            if (offset > 0.14 && Date.now() - lastGazeAlertRef.current > 5000) {
+              lastGazeAlertRef.current = Date.now();
               gazeAwayAlertsRef.current += 1;
               setAlert('gaze');
+              logGaze('ALERT gaze', { offset: offset.toFixed(3), count: gazeAwayAlertsRef.current });
               setTimeout(() => setAlert(null), 3500);
             }
           }
-        } catch {
-          // skip frame
+
+          if (DEBUG && Date.now() - lastDebugLogAtRef.current > 1000) {
+            lastDebugLogAtRef.current = Date.now();
+            logGaze('tick', {
+              readyState: video.readyState,
+              videoSize: `${video.videoWidth}x${video.videoHeight}`,
+              hasFace: Boolean(landmarks),
+            });
+          }
+        } catch (err) {
+          logGaze('frame error', { message: err.message });
         }
 
         rafRef.current = requestAnimationFrame(tick);

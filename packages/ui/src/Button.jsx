@@ -1,16 +1,19 @@
-import { gradientBtnClass } from './tokens.js';
+import { focusRingClass, gradientBtnClass } from './tokens.js';
 
 const variants = {
-  primary: `${gradientBtnClass} hover:opacity-95 disabled:opacity-60`,
+  primary: `${gradientBtnClass} disabled:opacity-50 disabled:shadow-none`,
   secondary:
-    'border-2 border-gray-200 bg-white text-[#2A2A2A] font-semibold hover:border-[#2AD175]/60 disabled:opacity-60',
-  ghost: 'text-[#64748B] font-medium hover:text-[#2A2A2A] disabled:opacity-60',
+    'border border-gray-200 bg-white text-maju-text font-medium hover:border-maju-accent/40 hover:bg-maju-surface active:bg-maju-highlight/10 disabled:opacity-50',
+  ghost:
+    'text-maju-muted font-medium hover:bg-maju-surface hover:text-maju-text disabled:opacity-50',
+  danger:
+    'border border-red-200 bg-white text-red-700 font-medium hover:bg-red-50 active:bg-red-100 disabled:opacity-50',
 };
 
 const sizes = {
-  sm: 'px-3 py-2 text-sm rounded-lg',
-  md: 'px-5 py-3 text-sm rounded-xl',
-  lg: 'px-6 py-4 text-base rounded-xl',
+  sm: 'px-3 py-1.5 text-sm rounded-md',
+  md: 'px-4 py-2 text-sm rounded-md',
+  lg: 'px-5 py-2.5 text-sm rounded-md',
 };
 
 export function Button({
@@ -23,7 +26,7 @@ export function Button({
   return (
     <button
       type={type}
-      className={`inline-flex items-center justify-center tracking-tight transition-opacity outline-none focus-visible:ring-2 focus-visible:ring-[#2AD175]/40 disabled:cursor-not-allowed ${variants[variant]} ${sizes[size]} ${className}`}
+      className={`inline-flex items-center justify-center transition-all outline-none disabled:cursor-not-allowed ${focusRingClass} ${variants[variant]} ${sizes[size]} ${className}`}
       {...props}
     />
   );

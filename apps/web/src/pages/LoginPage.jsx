@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { Input } from '@maju/ui';
 import { useAuth } from '../context/AuthContext.jsx';
+import { useI18n } from '../i18n/LanguageContext.jsx';
 import AuthLayout, {
   AuthError,
   AuthFooterLink,
@@ -10,6 +11,7 @@ import AuthLayout, {
 
 export default function LoginPage() {
   const { signInWithPassword, user, isConfigured } = useAuth();
+  const { t } = useI18n();
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from ?? '/dashboard';
@@ -36,20 +38,20 @@ export default function LoginPage() {
       await signInWithPassword(email.trim(), password);
       navigate(from, { replace: true });
     } catch (err) {
-      setError(err.message ?? '로그인에 실패했습니다.');
+      setError(err.message ?? t('auth.loginFailed'));
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <AuthLayout title="로그인" subtitle="MAJU 면접 시뮬레이터에 오신 것을 환영합니다.">
+    <AuthLayout title={t('auth.loginTitle')} subtitle={t('auth.loginSubtitle')}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <AuthError message={error} />
 
         <div>
-          <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-[#64748B]">
-            이메일
+          <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-maju-muted">
+            {t('auth.email')}
           </label>
           <Input
             id="email"
@@ -63,8 +65,8 @@ export default function LoginPage() {
         </div>
 
         <div>
-          <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-[#64748B]">
-            비밀번호
+          <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-maju-muted">
+            {t('auth.password')}
           </label>
           <Input
             id="password"
@@ -77,10 +79,14 @@ export default function LoginPage() {
           />
         </div>
 
-        <AuthSubmitButton loading={loading}>로그인</AuthSubmitButton>
+        <AuthSubmitButton loading={loading}>{t('auth.loginSubmit')}</AuthSubmitButton>
       </form>
 
-      <AuthFooterLink prompt="계정이 없으신가요?" linkText="회원가입" to="/signup" />
+      <AuthFooterLink
+        prompt={t('auth.noAccount')}
+        linkText={t('auth.signupLink')}
+        to="/signup"
+      />
     </AuthLayout>
   );
 }

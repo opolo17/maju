@@ -1,4 +1,5 @@
 import type {
+  FollowUpDepth,
   InterviewConfig,
   InterviewSession,
   Locale,
@@ -9,6 +10,7 @@ import type {
 const PERSONAS: PersonaId[] = ['gentle', 'pressure', 'followup'];
 const LOCALES: Locale[] = ['ko', 'en', 'ja'];
 const PEER_INTENSITIES: PeerIntensity[] = ['low', 'medium', 'high'];
+const FOLLOW_UP_DEPTHS: FollowUpDepth[] = [1, 2, 3];
 const DURATIONS = [15, 30, 45] as const;
 
 export function parseInterviewConfig(raw: unknown): InterviewConfig | null {
@@ -32,13 +34,28 @@ export function parseInterviewConfig(raw: unknown): InterviewConfig | null {
 
   if (!jobPostingText && !cheatSheetText) return null;
 
+  let title: string | undefined;
+  if (typeof input.title === 'string') {
+    const trimmedTitle = input.title.trim();
+    if (trimmedTitle.length > 80) return null;
+    title = trimmedTitle || undefined;
+  }
+
+  let followUpDepth: FollowUpDepth | undefined;
+  if (input.followUpDepth !== undefined && input.followUpDepth !== null) {
+    if (!FOLLOW_UP_DEPTHS.includes(input.followUpDepth as FollowUpDepth)) return null;
+    followUpDepth = input.followUpDepth as FollowUpDepth;
+  }
+
   return {
+    title,
     jobPostingText: jobPostingText || undefined,
     cheatSheetText: cheatSheetText || undefined,
     persona: persona as PersonaId,
     language: language as Locale,
     peerIntensity: peerIntensity as PeerIntensity,
     durationMinutes: durationMinutes as 15 | 30 | 45,
+    followUpDepth,
   };
 }
 

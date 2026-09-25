@@ -1,13 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 import InterviewRoom from '../components/interview/InterviewRoom.jsx';
 import { DEMO_QUESTION } from '../constants/participants.js';
+import { useSharedMediaStream } from '../context/MediaStreamContext.jsx';
 import { useHudCoach } from '../hooks/useHudCoach.js';
-import { useMediaStream } from '../hooks/useMediaStream.js';
 
 export default function InterviewDemoPage() {
   const navigate = useNavigate();
   const { stream, micEnabled, camEnabled, status, error, stopStream, toggleMic, toggleCam } =
-    useMediaStream();
+    useSharedMediaStream();
 
   const { alerts: hudAlerts, analysisVideoRef } = useHudCoach({
     stream,

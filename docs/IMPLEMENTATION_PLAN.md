@@ -21,11 +21,11 @@
 
 ### 1.3 MVP 성공 기준
 
-- [ ] 사용자가 **한 번의 면접 세션**을 처음부터 끝까지 완료할 수 있다
-- [ ] **3~4인 화면**(나 + AI 면접관 + 가상 지원자 2명)이 동시에 느껴진다
-- [ ] **실시간 HUD**가 말 속도·시선 이탈을 감지해 경고를 표시한다
-- [ ] 세션 종료 후 **요약 리포트**(강점·약점·개선 포인트)를 받을 수 있다
-- [ ] Waitlist 사전신청자(선착순 100명)에게 **프리미엄 패스**를 부여할 수 있다
+- [x] 사용자가 **한 번의 면접 세션**을 처음부터 끝까지 완료할 수 있다
+- [x] **3~4인 화면**(나 + AI 면접관 + 가상 지원자 2명)이 동시에 느껴진다 (UI; peer TTS는 Phase 2)
+- [x] **실시간 HUD**가 말 속도·시선 이탈을 감지해 경고를 표시한다
+- [x] 세션 종료 후 **요약 리포트**(강점·약점·개선 포인트)를 받을 수 있다
+- [ ] Waitlist 사전신청자(선착순 100명)에게 **프리미엄 패스**를 부여할 수 있다 (Phase 2)
 
 ---
 
@@ -364,23 +364,24 @@ waitlist_grants (
 - [x] `services/api` 스캐폴드 + 로컬 dev (`npm run dev:api`)
 - [x] 환경 변수 규칙 (`.env.example`)
 
-### Phase 1 — MVP Core (4~6주)
+### Phase 1 — MVP Core (4~6주) ✅
 
-**목표: "동작하는 한 판"**
+**목표: "동작하는 한 판"** — 상세: [docs/PHASE1.md](./PHASE1.md)
 
 - [x] 로그인 / 회원가입
-- [x] 면접 설정 (공고 텍스트 + 페르소나) — Step 1
-- [x] Live UI (4타일, webcam, mic) — Step 2
-- [ ] STT → LLM → TTS 루프 (면접관 1명만, peer는 텍스트+TTS 프리셋)
-- [ ] 클라이언트 HUD (말 속도 + 기본 시선)
-- [ ] 세션 저장 + 간단 리포트 (LLM 텍스트)
-- [x] 대시보드 (past sessions) — Step 1 목록
+- [x] 면접 설정 (공고 텍스트 + 페르소나)
+- [x] Live UI (4타일, webcam, mic)
+- [x] STT → LLM → TTS 루프 (면접관)
+- [x] 클라이언트 HUD (말 속도 + 시선 + Delivery 리포트)
+- [x] 세션 저장 + AI 리포트 + 대시보드 재도전
 
-### Phase 2 — 차별화 기능 (3~4주)
+### Phase 2 — 차별화 기능 (5~7주)
 
-- [ ] **동적 Peer Pressure** (LLM 생성 rival/model answers)
+> 상세 로드맵: **[docs/PHASE2.md](./PHASE2.md)**
+
+- [x] **동적 Peer Pressure** (LLM 생성 rival/model answers + TTS) — [PHASE2 Step 1](./PHASE2.md#step-1--동적-peer-pressure)
 - [ ] 페르소나 3종 완성 + 꼬리질문 깊이 조절
-- [ ] 리포트 고도화 (점수·타임라인·질문별)
+- [ ] 리포트 고도화 (루브릭·타임라인·질문별)
 - [ ] 다국어 UI (랜딩 i18n 재사용)
 - [ ] Waitlist → Premium pass redeem flow
 

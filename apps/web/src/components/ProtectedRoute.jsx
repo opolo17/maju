@@ -1,9 +1,11 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
+import { useI18n } from '../i18n/LanguageContext.jsx';
 
 export default function ProtectedRoute() {
   const { user, loading, isConfigured } = useAuth();
   const location = useLocation();
+  const { t } = useI18n();
 
   if (!isConfigured) {
     return <Navigate to="/setup" replace />;
@@ -11,8 +13,8 @@ export default function ProtectedRoute() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-white text-sm text-[#64748B]">
-        세션 확인 중…
+      <div className="flex min-h-screen items-center justify-center bg-white text-sm text-maju-muted">
+        {t('common.loading')}
       </div>
     );
   }

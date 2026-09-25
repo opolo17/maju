@@ -1,17 +1,22 @@
 import { Link } from 'react-router-dom';
-import { Button, Logo } from '@maju/ui';
+import { Alert, Button, Logo } from '@maju/ui';
+import LanguageSwitcher from '../components/LanguageSwitcher.jsx';
+import { useI18n } from '../i18n/LanguageContext.jsx';
 
 export default function AuthLayout({ title, subtitle, children }) {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-white px-6 py-12">
+      <div className="absolute right-4 top-4 sm:right-6 sm:top-6">
+        <LanguageSwitcher />
+      </div>
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
           <Link to="/" className="inline-block">
             <Logo className="text-2xl" />
           </Link>
-          <h1 className="mt-6 text-2xl font-bold tracking-tight">{title}</h1>
+          <h1 className="mt-6 text-2xl font-bold tracking-tight text-maju-text">{title}</h1>
           {subtitle ? (
-            <p className="mt-2 text-sm text-[#64748B]">{subtitle}</p>
+            <p className="mt-2 text-sm text-maju-muted">{subtitle}</p>
           ) : null}
         </div>
 
@@ -23,9 +28,9 @@ export default function AuthLayout({ title, subtitle, children }) {
 
 export function AuthFooterLink({ prompt, linkText, to }) {
   return (
-    <p className="mt-6 text-center text-sm text-[#64748B]">
+    <p className="mt-6 text-center text-sm text-maju-muted">
       {prompt}{' '}
-      <Link to={to} className="font-semibold text-[#2A2A2A] underline-offset-2 hover:underline">
+      <Link to={to} className="font-semibold text-maju-text underline-offset-2 hover:underline">
         {linkText}
       </Link>
     </p>
@@ -33,18 +38,14 @@ export function AuthFooterLink({ prompt, linkText, to }) {
 }
 
 export function AuthError({ message }) {
-  if (!message) return null;
-  return (
-    <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-      {message}
-    </p>
-  );
+  return <Alert variant="error">{message}</Alert>;
 }
 
 export function AuthSubmitButton({ loading, children }) {
+  const { t } = useI18n();
   return (
     <Button type="submit" size="lg" className="w-full" disabled={loading}>
-      {loading ? '처리 중…' : children}
+      {loading ? t('common.processing') : children}
     </Button>
   );
 }
